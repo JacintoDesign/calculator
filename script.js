@@ -53,15 +53,15 @@ function useOperator(operator) {
   } else if (operatorValue) {
     // Run calculation, update display, set firstValue to result
     const calculation = calculate[operatorValue](firstValue, currentValue);
-    console.log('calculation', calculation);
+    // console.log('calculation', calculation);
     calculatorDisplay.textContent = calculation;
     firstValue = calculation;
   }
   // Ready for next value, store operator
   awaitingNextValue = true;
   operatorValue = operator;
-  console.log('firstValue', firstValue);
-  console.log(operatorValue);
+  // console.log('firstValue', firstValue);
+  // console.log(operatorValue);
 }
 
 // Add Event Listeners for numbers, operators, decimal
