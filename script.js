@@ -1,28 +1,33 @@
 const calculatorDisplay = document.querySelector('h1');
 const inputBtns = document.querySelectorAll('button');
 const clearBtn = document.getElementById('clear-btn');
-const equalBtn = document.getElementById('equal-btn');
 
 let firstValue = 0;
 let operatorValue = '';
-let awaitingSecondValue = false;
+let awaitingNextValue = false;
 
-function sendInputValue(value) {
-  if (awaitingSecondValue) {
-    calculatorDisplay.textContent = value;
-    awaitingSecondValue = false;
+function sendNumberValue(number) {
+  // Replace current display value if first value is entered
+  if (awaitingNextValue) {
+    calculatorDisplay.textContent = number;
+    awaitingNextValue = false;
   } else {
+    // If current display value is 0, replace it, if not add number to display value
     const displayValue = calculatorDisplay.textContent;
-    calculatorDisplay.textContent = displayValue === '0' ? value : displayValue + value;
+    calculatorDisplay.textContent = displayValue === '0' ? number : displayValue + number;
   }
 }
 
 function addDecimal() {
+  // If operator pressed, don't add decimal
+  if (awaitingNextValue) return;
+  // If no decimal, add one
   if (!calculatorDisplay.textContent.includes('.')) {
     calculatorDisplay.textContent = `${calculatorDisplay.textContent}.`;
   }
 }
 
+// Calculate first and second values depending on operator
 const calculate = {
   '/': (firstNumber, secondNumber) => firstNumber / secondNumber,
 
@@ -37,26 +42,32 @@ const calculate = {
 
 function useOperator(operator) {
   const currentValue = parseFloat(calculatorDisplay.textContent);
+  // Prevent multiple operators
+  if (operatorValue && awaitingNextValue) {
+    operatorValue = operator;
+    return;
+  }
+  // Assign firstValue if no value
   if (!firstValue) {
     firstValue = currentValue;
   } else if (operatorValue) {
+    // Run calculation, update display, set firstValue to result
     const calculation = calculate[operatorValue](firstValue, currentValue);
     console.log('calculation', calculation);
     calculatorDisplay.textContent = calculation;
     firstValue = calculation;
   }
-  awaitingSecondValue = true;
+  // Ready for next value, store operator
+  awaitingNextValue = true;
   operatorValue = operator;
   console.log('firstValue', firstValue);
   console.log(operatorValue);
-
 }
 
-
-
+// Add Event Listeners for numbers, operators, decimal
 inputBtns.forEach((inputBtn) => {
   if (inputBtn.classList.length === 0) {
-    inputBtn.addEventListener('click', () => sendInputValue(inputBtn.value));
+    inputBtn.addEventListener('click', () => sendNumberValue(inputBtn.value));
   } else if (inputBtn.classList.contains('operator')) {
     inputBtn.addEventListener('click', () => useOperator(inputBtn.value));
   } else if (inputBtn.classList.contains('decimal')) {
@@ -64,13 +75,13 @@ inputBtns.forEach((inputBtn) => {
   }
 });
 
-function resetDisplay() {
+// Reset all values, display
+function resetAll() {
   firstValue = 0;
+  operatorValue = '';
+  awaitingNextValue = false;
   calculatorDisplay.textContent = '0';
 }
 
-// Event Listeners
-clearBtn.addEventListener('click', resetDisplay);
-equalBtn.addEventListener('click', calculate);
-
-resetDisplay();
+// Event Listener
+clearBtn.addEventListener('click', resetAll);
