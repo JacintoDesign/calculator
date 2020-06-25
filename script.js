@@ -41,7 +41,7 @@ const calculate = {
 };
 
 function useOperator(operator) {
-  const currentValue = parseFloat(calculatorDisplay.textContent);
+  const currentValue = Number(calculatorDisplay.textContent);
   // Prevent multiple operators
   if (operatorValue && awaitingNextValue) {
     operatorValue = operator;
@@ -50,18 +50,14 @@ function useOperator(operator) {
   // Assign firstValue if no value
   if (!firstValue) {
     firstValue = currentValue;
-  } else if (operatorValue) {
-    // Run calculation, update display, set firstValue to result
+  } else {
     const calculation = calculate[operatorValue](firstValue, currentValue);
-    // console.log('calculation', calculation);
     calculatorDisplay.textContent = calculation;
     firstValue = calculation;
   }
   // Ready for next value, store operator
   awaitingNextValue = true;
   operatorValue = operator;
-  // console.log('firstValue', firstValue);
-  // console.log(operatorValue);
 }
 
 // Add Event Listeners for numbers, operators, decimal
